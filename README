@@ -1,0 +1,15 @@
+This is Freelancer Marketplace App API 
+
+The main aim of this project:
+
+1: Freelancers(workers) and Clients can easly and effeciently find thier job and workers respectively.
+2: Secure and guaranteid deals.
+3: Best place to make their first money.
+
+
+This app created by using Django and DRF
+
+
+
+C:\Users\user\Desktop\Freelance App\Freelance_Marketplace\apps\users\views.py: Error [EmailCodeSendAPIView]: unable to guess serializer. This is graceful fallback handling for APIViews. Consider using GenericAPIView as view base class, if view is under your control. Either way you may want to add a serializer_class (or method). Ignoring view for now.
+Warning: enum naming encountered a non-optimally resolvable collision for fields named "status". The same name has been used for multiple choice sets in multiple components. The collision was resolved with "StatusBe7Enum". add an entry to ENUM_NAME_OVERRIDES to fix the naming.
