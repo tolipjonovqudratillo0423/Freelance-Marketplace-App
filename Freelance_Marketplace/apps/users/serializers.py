@@ -107,7 +107,21 @@ class RegisterSerializer(serializers.Serializer):
         
         return validated_data
         
+    def create(self, validated_data):
+        confirm_password = validated_data.pop("confirm_password", None)
+        country_id = validated_data.pop("country", None)
+            
+        user = User.objects.create_user(
+            **validated_data
+        )
         
+        user.country = Country.objects.filter(
+            id=validated_data.get("country_id")
+        ).first()
+        
+        return user
+            
+            
 
 # =========================================================
 # EMAIL VERIFICATION SERIALIZER

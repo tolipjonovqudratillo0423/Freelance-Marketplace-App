@@ -64,26 +64,9 @@ class RegisterAPIView(APIView):
         
         serializer = self.serializer_class(data = request.data)
         
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid(raise_exception=True)  
         
-        username = serializer.validated_data.get("username", None)
-        password = serializer.validated_data.get("password", None)
-        email = serializer.validated_data.get("email", None)
-        country_id = serializer.validated_data.get("country", None)
-        role = serializer.validated_data.get("role", None)
-        
-        country = Country.objects.filter(
-            id = country_id
-        ).first()
-        
-        user = User.objects.create_user(
-            username = username,
-            email = email,
-            password = password,
-            role = role,
-            is_verified = False,
-            country = country,
-        )
+        serializer.save()
         
         return ResponseMessage.success(
             "User created, However you should verify your email to unlock more opportunities !",

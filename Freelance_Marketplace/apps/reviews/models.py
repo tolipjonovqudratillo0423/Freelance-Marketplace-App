@@ -35,5 +35,12 @@ class Review(BaseModel):
     def __str__(self):
         return f"Freelancer {self.reviewed.username} reviewed by {self.reviewer.username} in project {self.project.title}"
     
-    
+    class Meta:
+        
+        constraints = [
+            models.UniqueConstraint(
+                fields=["project", "reviewed"],
+                name="review_per_project"
+            )
+        ]
 

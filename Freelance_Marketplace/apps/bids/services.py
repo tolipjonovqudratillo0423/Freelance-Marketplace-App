@@ -1,5 +1,6 @@
 from django.db import transaction
-from rest_framework.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import PermissionDenied, ValidationError
 
 from apps.bids.models import (
     Bid, Project
@@ -14,13 +15,13 @@ class BidService:
         accepted_by
     ):
         
-        bid = (
+        bid = get_object_or_404(
             Bid.objects
             .select_for_update()
             .select_related(
                 "project",
                 "freelancer",
-            ).get(id = bid_id)
+            ), id=bid_id
         )
         
         project = bid.project
@@ -29,12 +30,12 @@ class BidService:
             raise PermissionDenied()
         
         if project.status != Project.StatusChoice.OPEN:
-            raise PermissionDenied(
+            raise ValidationError(
                 "Project has already assigned!"
             )
         
         if bid.status != Bid.BidStatus.NEW:
-            raise PermissionDenied(
+            raise ValidationError(
                 "Bid has already processed!"
             )
         
@@ -45,9 +46,36 @@ class BidService:
         bid.save(update_fields=["status",])   
         
         project.status = Project.StatusChoice.IN_PROGRESS
-        project.freelancer = accepted_by
+        project.freelancer = bid.freelancer
         project.save(update_fields=["status", "freelancer"])
         
-        project.bids.exclude(id=bid_id).update(status=Bid.BidStatus.DECLINED)
+        project.bids.filter(
+            status=Bid.BidStatus.NEW
+        ).exclude(
+            id=bid_id
+        ).update(
+            status=Bid.BidStatus.DECLINED
+        )
         
         return project
+    
+
+    # @staticmethod
+    # @transaction.atomic
+    # def complete_bid(
+    #     bid_id:int,
+    #     completed_by
+    # ):
+        
+    #     bid = (
+    #         Bid.objects
+    #         .select_for_update()
+    #         .select_related(
+    #             "freelancer",
+    #             "project",
+    #         )
+    #         .fitler(
+    #             id=bid_id,
+    #             status=Bid.BidStatus.
+    #         )
+    #     )

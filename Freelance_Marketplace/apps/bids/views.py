@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework.exceptions import ValidationError
+from django.db import IntegrityError
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 
@@ -76,13 +76,20 @@ class BidCreateAPIView(APIView):
             raise_exception=True
         )
           
+        try: 
+            serializer.save(freelancer = user)
+            return ResponseMessage.success(
+                message="Bid Created",
+                data=serializer.data
+            )
+        except IntegrityError:
+            
+            return ResponseMessage.error(
+                message="You cannot bid on your own project.",
+                data=serializer.data
+            )
         
-        serializer.save(freelancer = user)
         
-        return ResponseMessage.success(
-            message="Bid Created",
-            data=serializer.data
-        )
         
     
     
@@ -114,5 +121,10 @@ class BidAcceptAPIView(APIView):
         )
         
         return ResponseMessage.success(
-            message="Bid accepted!"
-        )
+        message="Bid accepted!",
+        data={
+            "project": project.title,
+            "status": project.status,
+            "freelancer": project.freelancer.username
+        }
+)

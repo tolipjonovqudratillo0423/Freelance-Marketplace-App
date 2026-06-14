@@ -40,6 +40,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt", 
+    "silk",
 ]
 
 DEBUG_TOOLS = [
@@ -77,6 +78,9 @@ MIDDLEWARE = [
 
 WSGI_APPLICATION = 'Freelance_Marketplace.wsgi.application'
 
+if DEBUG:
+
+    MIDDLEWARE += ["silk.middleware.SilkyMiddleware"]
 
 
 # =========================================================

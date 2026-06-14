@@ -31,18 +31,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "status",
         ]
         
-    
-    def validate(self, attrs):
-        validated_data = super().validate(attrs)
-        
-        max_price = validated_data.get("max_price", None)
-        min_price = validated_data.get("min_price", None)
-        
-        if max_price < min_price:
-            raise serializers.ValidationError("Max price should be greater than min price !")
-        
-        return validated_data
-    
+
     
         
 # =========================================================
@@ -73,9 +62,6 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
         
     def validate(self, attrs):
         validated_data = super().validate(attrs)
-        
-        if self.max_price < self.min_price:
-            raise serializers.ValidationError("Max price should be greater than min price !")
         
         return validated_data
 

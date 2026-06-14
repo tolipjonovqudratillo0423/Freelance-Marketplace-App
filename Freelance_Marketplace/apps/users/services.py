@@ -3,6 +3,11 @@ from rest_framework.exceptions import PermissionDenied
 from apps.users.models import EmailVerification
 
 
+
+# =========================================================
+# EMAIL SERVICE
+# =========================================================
+
 class EmailService:
     
     @staticmethod
@@ -48,3 +53,6 @@ class EmailService:
         ).delete()
     
         return True
+    
+    
+    

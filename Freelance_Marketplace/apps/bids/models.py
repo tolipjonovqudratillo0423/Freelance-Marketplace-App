@@ -40,7 +40,8 @@ class Bid(BaseModel):
     status = models.CharField(
         choices=BidStatus.choices,
         default=BidStatus.NEW,
-        max_length=16
+        max_length=16,
+        db_index=True
     )
        
     
@@ -55,6 +56,7 @@ class Bid(BaseModel):
         
         indexes = [
             models.Index(fields=["project", "freelancer"]), 
+            models.Index(fields=["status",])
         ]
         
         constraints = [

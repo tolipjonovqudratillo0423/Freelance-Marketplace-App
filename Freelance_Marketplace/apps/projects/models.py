@@ -68,6 +68,14 @@ class Project(BaseModel):
             models.Index(fields=["status", "client"]),
         ]
         
+
+        constraints = [
+            models.CheckConstraint(
+                # Заменили check= на condition=
+                condition=models.Q(max_price__gte=models.F("min_price")), 
+                name="project_price_valid"
+            )]
+        
         
     
     

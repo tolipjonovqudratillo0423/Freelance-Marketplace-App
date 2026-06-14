@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from apps.projects.serializers import (
     ProjectSerializer,ProjectCreateSerializer
@@ -27,7 +27,7 @@ from apps.users.permissions import (
 class ProjectAPIView(APIView):
     
     serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny,]
     
     def get(self, request):
         
@@ -56,7 +56,7 @@ class ProjectAPIView(APIView):
 class ProjectCreateAPIView(APIView):
     
     serializer_class = ProjectCreateSerializer
-    permission_classes = [IsClientOrReadOnly]  
+    permission_classes = [IsAuthenticated, IsClientOrReadOnly]  
     
     def post(self, request):
         
