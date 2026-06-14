@@ -39,11 +39,11 @@ class ReviewOfProjectAPIView(APIView):
             context={"request": request}
         )
         
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
         
         review = ReviewRepository.get_by_project(
             reviewer=request.user,
-            project_id=serializer.validated_data("project_id", None)
+            project_id=serializer.validated_data.get("project_id", None)
         )
         
         serializer = ReviewSerializer(review)

@@ -7,6 +7,9 @@ from apps.reviews.models import (
 from apps.projects.models import (
     Project
 )
+from apps.bids.models import (
+    Bid
+)
 
 
 
@@ -83,17 +86,17 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
                 "You can't review this project!"
             )
         
-        if project.client != request.user:
-            raise serializers.ValidationError(
-                "Client is not owner of the given project!"
-            )
-            
         
         if project.status != Project.StatusChoice.COMPLETED:
             raise serializers.ValidationError(
                 "Project should be completed!"
             )
-        
+            
+        if Review.objects.filter(project=project, reviewer=request.user).exists():
+            raise serializers.ValidationError(
+                "You already reviewed this project!"
+            )
+            
         if not 0 < rating < 6:
             
             raise serializers.ValidationError(
@@ -107,15 +110,11 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         project = validated_data.get("project", None)
         rating = validated_data.get("rating", None)
         request = self.context.get("request", None)
-        
-        bid = project.bids.select_related(
-            "freelancer",
-        ).first()
-        
+              
         
         review = Review.objects.create(
             project=project, 
-            reviewed=bid.freelancer,
+            reviewed=project.freelancer,
             rating=rating,
             reviewer=request.user
         )
