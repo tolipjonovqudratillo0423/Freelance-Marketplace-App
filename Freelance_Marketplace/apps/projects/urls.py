@@ -1,18 +1,27 @@
 from django.urls import path 
 
 from apps.projects.views import (
-    ProjectAPIView, ProjectCreateAPIView,
-    ClientProjectAPIView
+    ProjectCreateAPIView,
+    ClientProjectAPIView, ProjectCompleteAPIView
 )
 from apps.bids.views import BidAcceptAPIView
 
 # =========================================================
-# PROJECT URLS |||| ONLY CLIENT
+# PROJECT URLS |||| ONLY CLIENT 
 # =========================================================        
 
 urlpatterns = [
     path("projects/all", ClientProjectAPIView.as_view(), name="project_list_client"),
     path("projects/create", ProjectCreateAPIView.as_view(), name="project_create"),
+    
+]
+
+
+# =========================================================
+# PROJECT URLS |||| ONLY CLIENT 
+# =========================================================        
+urlpatterns += [
+    path("projects/complete", ProjectCompleteAPIView.as_view(), name="project_complete"),
 ]
 
 # =========================================================

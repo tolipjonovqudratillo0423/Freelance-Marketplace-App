@@ -2,11 +2,11 @@ from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
-from rest_framework.serializers import Serializer
 
 from apps.users.serializers import (
     LoginSerializer, RegisterSerializer, 
-    EmailVerificationSerializer
+    EmailVerificationSerializer,
+    MyDynamicSerializer
     )
 from apps.common.utils import (
     tokens, ResponseMessage, 
@@ -85,7 +85,7 @@ class RegisterAPIView(APIView):
 class EmailCodeSendAPIView(APIView):
     
     
-    serializer_class = Serializer
+    serializer_class = MyDynamicSerializer
     permission_classes = [IsAuthenticated]
     
     def get(self, request):

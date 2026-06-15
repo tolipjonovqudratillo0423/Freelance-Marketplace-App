@@ -133,3 +133,8 @@ class EmailVerificationSerializer(serializers.Serializer):
         max_length = 6
     )
     
+    
+    
+class MyDynamicSerializer(serializers.Serializer):
+    class Meta:
+        ref_name = 'EmailCodeSendSerializer'

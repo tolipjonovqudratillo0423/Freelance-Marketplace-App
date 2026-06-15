@@ -3,7 +3,8 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from apps.projects.serializers import (
-    ProjectSerializer,ProjectCreateSerializer
+    ProjectSerializer,ProjectCreateSerializer,
+    ProjectCompleteSerializer
 )
 from apps.projects.repositories import (
     ProjectRepository,
@@ -12,7 +13,10 @@ from apps.common.utils import (
     ResponseMessage
 )
 from apps.users.permissions import (
-    IsClientOrReadOnly
+    IsClientOrReadOnly, IsFreelancerOrReadOnly
+)
+from apps.projects.services import (
+    ProjectService
 )
 # Create your views here.
 
@@ -101,3 +105,43 @@ class ClientProjectAPIView(APIView):
             message=F"{request.user.username}'s projects!",
             data=serializer.data
         )
+ 
+
+
+# =========================================================
+# PROJECT COMPLETE APIVIEW |||| ONLY FREELANCER
+# =========================================================        
+@extend_schema(
+    summary="Complete project.",
+    tags=["Freelancer",],
+)        
+class ProjectCompleteAPIView(APIView):
+    
+    serializer_class = ProjectCompleteSerializer
+    permission_classes = [IsAuthenticated, IsFreelancerOrReadOnly]
+    
+    def post(self, request):
+        
+        serializer = self.serializer_class(
+            data=request.data,
+        )
+        
+        serializer.is_valid(raise_exception=True)
+        project_id = serializer.validated_data.get("project_id", None)
+        
+        
+        project = ProjectService.complete_project(
+            project_id=project_id,
+            freelancer=request.user,
+        )
+        
+        return ResponseMessage.success(
+            message="Project completed",
+            data={
+                "project":project.title, 
+                "freelancer":project.freelancer.username, 
+                "status":project.status,
+                "updated_at":project.updated_at, 
+            }
+        )
+        

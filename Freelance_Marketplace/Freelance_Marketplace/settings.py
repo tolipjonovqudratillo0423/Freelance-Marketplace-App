@@ -247,10 +247,17 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'ENUM_NAME_OVERRIDES': {
-        'MyUniqueStatusEnum': 'path.to.your.first.Serializer.status_choices',
-        'AnotherStatusEnum': 'path.to.second.Serializer.status_choices',
+        # Шаблон: 'полный.путь.импорта.КлассВыбора': 'ЖелаемоеИмяВДокументации'
+        
+        'apps.users.models.MyUniqueStatusEnum': 'MyUniqueStatus',
+        'apps.tasks.serializers.AnotherStatusEnum': 'AnotherStatus',
+        
+        # Чтобы убрать ошибку с авто-именем "StatusBe7Enum",
+        # найдите этот третий класс статуса и добавьте его сюда:
+        'apps.orders.models.StatusChoices': 'OrderStatus', 
     },
 }
+
 
 # # =========================================================
 # # DEBUG TOOLBAR

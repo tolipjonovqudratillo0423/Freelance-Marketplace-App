@@ -5,6 +5,7 @@ from apps.projects.models import (
 )
 
 
+
 # =========================================================
 # PROJECT SHOW SERIALIZER
 # =========================================================
@@ -60,13 +61,6 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
             "freelancer"
         ]
         
-    def validate(self, attrs):
-        validated_data = super().validate(attrs)
-        
-        return validated_data
-
-
-
     def create(self, validated_data):
         
         required_skills = validated_data.pop("required_skills", [])
@@ -93,4 +87,15 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
             
         return instance
              
-        
+ 
+
+# =========================================================
+# PROJECT CREATE SERIALIZER
+# =========================================================
+
+class ProjectCompleteSerializer(serializers.Serializer):
+    
+    project_id = serializers.IntegerField()
+    
+    
+    

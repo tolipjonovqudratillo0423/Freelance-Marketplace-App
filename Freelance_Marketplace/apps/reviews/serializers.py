@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
+from django.db.models import Avg
 
 from apps.reviews.models import (
     Review
@@ -118,6 +119,10 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
             rating=rating,
             reviewer=request.user
         )
+        
+        avg = project.freelancer.freelancer_reviews.aggregate(Avg("rating"))["rating__avg"]
+        project.freelancer.rating = round(avg)
+        project.freelancer.save(update_fields=["rating"])
         
         return review
 
