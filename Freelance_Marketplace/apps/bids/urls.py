@@ -2,7 +2,9 @@ from django.urls import path
 
 from apps.bids.views import (
     FreelancerBidAPIView, BidCreateAPIView,
-    BidAcceptAPIView
+)
+from apps.projects.views import (
+    ProjectCompleteAPIView
 )
 
 urlpatterns = [
@@ -11,5 +13,12 @@ urlpatterns = [
 ]
 
 
+
+# =========================================================
+# PROJECT URLS |||| ONLY FREELANCER
+# =========================================================        
+urlpatterns += [
+    path("projects/complete", ProjectCompleteAPIView.as_view(), name="project_complete"),
+]
 
     

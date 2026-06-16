@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from apps.projects.serializers import (
@@ -18,6 +18,13 @@ from apps.users.permissions import (
 from apps.projects.services import (
     ProjectService
 )
+from apps.projects.filters import (
+    ProjectFilter
+)
+from apps.projects.paginations import (
+    StandardProjectPage
+)
+
 # Create your views here.
 
 
@@ -26,7 +33,13 @@ from apps.projects.services import (
 # =========================================================
 @extend_schema(
     summary="All open projects.",
-    tags=["Everyone",],
+    tags=["Everyone"],
+    parameters=[
+        OpenApiParameter("min_price", float, description="Min price filter"),
+        OpenApiParameter("max_price", float, description="Max price filter"),
+        OpenApiParameter("skills", int, description="Skill ID filter"),
+        OpenApiParameter("search", str, description="Search by title or description"),
+    ]
 )
 class ProjectAPIView(APIView):
     
@@ -36,16 +49,37 @@ class ProjectAPIView(APIView):
     def get(self, request):
         
         project = ProjectRepository.get_all_projects()
+        paginator = StandardProjectPage()
         
-        serializer = self.serializer_class(
-            project,
-            many=True
+        #=====Filter=======================================
+        filterset = ProjectFilter(request.GET, queryset=project)
+        
+        result_page = paginator.paginate_queryset(
+            queryset=filterset.qs,
+            request=request,
+            view=self
+        )
+        if result_page is not None:
+            
+            serializer = self.serializer_class(
+                result_page,
+                many=True
+            )
+            paginator_resp = paginator.get_paginated_response(
+                serializer.data
+            )
+            return ResponseMessage.success(
+                message="Projects",
+                data=paginator_resp.data
             )
         
-        
+        serializer = self.serializer_class(
+            filterset.qs,
+            many=True
+        )
         return ResponseMessage.success(
-            message="Projects",
-            data=serializer.data
+            "Projects!", 
+            serializer.data
         )
         
         

@@ -17,12 +17,6 @@ urlpatterns = [
 ]
 
 
-# =========================================================
-# PROJECT URLS |||| ONLY CLIENT 
-# =========================================================        
-urlpatterns += [
-    path("projects/complete", ProjectCompleteAPIView.as_view(), name="project_complete"),
-]
 
 # =========================================================
 # BID URLS |||| ONLY CLIENT

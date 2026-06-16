@@ -12,5 +12,5 @@ urlpatterns = []
 # =========================================================        
 
 urlpatterns += [
-    path("projects", ProjectAPIView.as_view(), name="project_list_all"),
+    path("projects/", ProjectAPIView.as_view(), name="project_list_all"),
 ]
