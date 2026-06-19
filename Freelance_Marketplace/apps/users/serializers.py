@@ -134,7 +134,28 @@ class EmailVerificationSerializer(serializers.Serializer):
     )
     
  
+# =========================================================
+# Unique Serializer Don't touch
+# =========================================================
     
 class MyDynamicSerializer(serializers.Serializer):
+    
     class Meta:
         ref_name = 'EmailCodeSendSerializer'
+        
+
+
+# =========================================================
+# COUNTRY SERIALIZER
+# =========================================================
+ 
+class CountrySerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Country
+        fields = [
+            "id",
+            "name"
+        ]
+        
+        

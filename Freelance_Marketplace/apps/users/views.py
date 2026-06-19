@@ -1,12 +1,12 @@
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from drf_spectacular.utils import extend_schema
 
 from apps.users.serializers import (
     LoginSerializer, RegisterSerializer, 
     EmailVerificationSerializer,
-    MyDynamicSerializer
+    MyDynamicSerializer, CountrySerializer
     )
 from apps.common.utils import (
     tokens, ResponseMessage, 
@@ -58,7 +58,8 @@ class LoginAPIView(APIView):
 )
 class RegisterAPIView(APIView):
 
-    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer   
     
     def post(self, request):
         
@@ -145,4 +146,5 @@ class EmailVerifyAPIView(APIView):
         
         return ResponseMessage.success("Email verified ! :)", data=tokens(request.user))
 
-    
+  
+

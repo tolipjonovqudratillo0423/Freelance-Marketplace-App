@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Alert from '../components/Alert'
 import { useAuth } from '../context/auth'
@@ -21,6 +21,26 @@ export default function Register() {
   const [form, setForm] = useState(initialForm)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [countries, setCountries] = useState([])
+  const [countriesState, setCountriesState] = useState({ loading: true, error: '' })
+
+  useEffect(() => {
+    const controller = new AbortController()
+    async function loadCountries() {
+      try {
+        const response = await apiRequest('/common/countries/', { signal: controller.signal })
+        setCountries(Array.isArray(response.data) ? response.data : [])
+      } catch (requestError) {
+        if (requestError.name !== 'AbortError') {
+          setCountriesState({ loading: false, error: requestError.message })
+        }
+        return
+      }
+      setCountriesState({ loading: false, error: '' })
+    }
+    loadCountries()
+    return () => controller.abort()
+  }, [])
 
   function update(event) {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
@@ -82,8 +102,11 @@ export default function Register() {
           </div>
           <label className="block">
             <span className="mb-2 block text-sm text-zinc-400">{t('country')}</span>
-            <input className="field" type="number" min="1" name="country" value={form.country} onChange={update} placeholder="e.g. 1" required />
-            <span className="mt-2 block text-xs text-zinc-700">{t('countryHint')}</span>
+            <select className="field" name="country" value={form.country} onChange={update} disabled={countriesState.loading || Boolean(countriesState.error)} required>
+              <option value="">{countriesState.loading ? t('loadingCountries') : t('selectCountry')}</option>
+              {countries.map((country) => <option key={country.id} value={country.id}>{country.name}</option>)}
+            </select>
+            {countriesState.error && <span className="mt-2 block text-xs text-red-400">{t('countriesError')} {countriesState.error}</span>}
           </label>
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">

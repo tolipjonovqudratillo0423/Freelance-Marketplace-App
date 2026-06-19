@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from apps.users.models import (
-    User, Skills, SkillsCategory
+    User, Skills, SkillsCategory, Country
 )
 # Register your models here.
 
@@ -42,3 +42,11 @@ class SkillsAdmin(admin.ModelAdmin):
 @admin.register(SkillsCategory)
 class SkillsCategoryAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
+    
+@admin.register(Country)
+class CountryAdminModel(admin.ModelAdmin):
+    list_display = ("id", "name")
+    
+    class Meta:
+        verbose_name = "Country"
+        verbose_name_plural = "Countries"

@@ -147,3 +147,6 @@ http://127.0.0.1:8000/api/schema/swagger-ui/
 - `update_fields` used on all model saves for minimal DB writes
 - Email verification codes expire after 5 minutes with max 6 attempts
 - `silk` profiling enabled only in DEBUG mode
+
+
+
