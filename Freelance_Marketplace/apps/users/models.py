@@ -93,7 +93,7 @@ class User(AbstractUser):
         default=0,
     )
     is_verified = models.BooleanField(
-        default=True
+        default=False
     )
     
     class Meta:

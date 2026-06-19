@@ -70,7 +70,6 @@ class RegisterAPIView(APIView):
         
         return ResponseMessage.success(
             "User created, However you should verify your email to unlock more opportunities !",
-            serializer.data
         )
 
 

@@ -71,13 +71,13 @@ class RegisterSerializer(serializers.Serializer):
         if User.objects.filter(username = username).exists():
             
             raise serializers.ValidationError(
-                "Account can't be created"
+                "Username has already been taken ! :("
             )
         
         if User.objects.filter(email = email).exists():
             
             raise serializers.ValidationError(
-                "Account can't be created"
+                "Email has already been taken ! :("
             )
         
         if not Country.objects.filter(id=country).exists():
@@ -133,7 +133,7 @@ class EmailVerificationSerializer(serializers.Serializer):
         max_length = 6
     )
     
-    
+ 
     
 class MyDynamicSerializer(serializers.Serializer):
     class Meta:

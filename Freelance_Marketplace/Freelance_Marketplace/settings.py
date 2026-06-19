@@ -40,7 +40,8 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt", 
-    "django_filters"
+    "django_filters",
+    'corsheaders',
 ]
 
 DEBUG_TOOLS = [
@@ -68,6 +69,7 @@ else:
 # =========================================================
 
 MIDDLEWARE = [
+     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -262,9 +264,9 @@ SPECTACULAR_SETTINGS = {
 
 
 # # =========================================================
-# # DEBUG TOOLBAR
+# # CORS
 # # =========================================================
 
-# INTERNAL_IPS = [
-#     "127.0.0.1",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
