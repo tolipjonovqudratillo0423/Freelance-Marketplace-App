@@ -22,11 +22,13 @@ urlpatterns = [
 # =========================================================
 
 urlpatterns += [
-    path('auth/', include('apps.users.urls')),
+    path('auth/', include('apps.authentication.urls')),
     path('client/', include('apps.projects.urls')),
     path('freelancer/', include('apps.bids.urls')),
     path('common/', include('apps.common.urls')),
     path('review/', include('apps.reviews.urls')),
+    path('onboard/', include('apps.onboard.urls')),
+    path('verification/', include('apps.verification.urls')),
 ]
 
 

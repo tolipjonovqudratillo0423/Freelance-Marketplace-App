@@ -22,7 +22,9 @@ class BaseModel(models.Model):
 
 class Country(BaseModel):
     
-    name = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100,
+        )
     
     def __str__(self):
         return self.name
@@ -30,6 +32,13 @@ class Country(BaseModel):
     class Meta:
         verbose_name = "Country"
         verbose_name_plural = "Countries"
+        
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                name="unique_country_name"
+            )
+        ]
 
 
 
@@ -39,11 +48,20 @@ class Country(BaseModel):
 
 class SkillsCategory(BaseModel):
     
-    name = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100
+        )
     
     def __str__(self):
         return self.name
     
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                name="unique_skill_category_name"
+            )
+        ]
   
   
 class Skills(BaseModel):
@@ -64,4 +82,9 @@ class Skills(BaseModel):
         verbose_name = "Skill"
         verbose_name_plural = "Skills"
         # ordering = ["created_at"]
- 
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                name="unique_skill_name"
+            )
+        ]

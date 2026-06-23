@@ -85,7 +85,7 @@ class BidCreateAPIView(APIView):
         except IntegrityError:
             
             return ResponseMessage.error(
-                message="You already placed a bid ",
+                message="You already placed a bid",
                 data=serializer.data
             )
         

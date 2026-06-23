@@ -41,7 +41,7 @@ class Bid(BaseModel):
         choices=BidStatus.choices,
         default=BidStatus.NEW,
         max_length=16,
-        db_index=True
+  
     )
        
     
@@ -63,6 +63,10 @@ class Bid(BaseModel):
             models.UniqueConstraint(
                 fields = ["project", "freelancer"],
                 name="bid_project_freelancer_unique"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(price__gte=0),
+                name="bid_price_positive"
             )
         ]
 

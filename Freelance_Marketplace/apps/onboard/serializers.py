@@ -59,6 +59,40 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
 
 #==========================================================
+# PROFILE SERIALIZER
+#==========================================================
+
+class FreelancerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FreelancerProfile
+        
+        fields = [
+            "profile",
+            "skills",
+            "hourly_rate",
+            "resume",
+        ]
+        
+        read_only_fields = [
+            "profile",
+        ]
+    
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+        
+        hourly_rate = validated_data.get("hourly_rate", None)
+       
+        if hourly_rate < 0:
+            
+            raise serializers.ValidationError(
+                "Hourly rate can't be negative !"
+            )
+        
+        return validated_data
+    
+
+
+#==========================================================
 # PORTFOLIO SERIALIZER
 #==========================================================
     
@@ -137,7 +171,6 @@ class EducationSerializer(serializers.ModelSerializer):
 
 
         
-
 #==========================================================
 # EXPERIENCE SERIALIZER
 #==========================================================

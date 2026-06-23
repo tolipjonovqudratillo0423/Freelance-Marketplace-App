@@ -1,13 +1,12 @@
 from django.db import models
 
-
 from apps.users.models import (
     User
 )
 from apps.common.models import (
     BaseModel, Skills
 )
-# Create your models here.
+
 # =========================================================
 # USER PROFILE
 # =========================================================
@@ -30,6 +29,7 @@ class UserProfile(BaseModel):
         unique=True,
         max_length=14,
     )
+   
     
     def __str__(self):
         return self.user.username
@@ -61,6 +61,12 @@ class FreelancerProfile(BaseModel):
         blank=True,
         null=True
     )
+    hourly_rate = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00
+    )
+    
     
     def __str__(self):
         return self.profile.user.username  

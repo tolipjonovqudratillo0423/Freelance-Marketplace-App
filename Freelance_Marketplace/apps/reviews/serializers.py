@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
-from django.db.models import Avg
 
 from apps.reviews.models import (
     Review
@@ -8,10 +7,9 @@ from apps.reviews.models import (
 from apps.projects.models import (
     Project
 )
-from apps.bids.models import (
-    Bid
+from apps.reviews.services import (
+    ReviewService
 )
-
 
 
 # =========================================================
@@ -78,7 +76,6 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         validated_data = super().validate(attrs)
         
         project = validated_data.get("project", None)
-        reviewed = validated_data.get("reviewed", None)
         rating = validated_data.get("rating", None)
         request = self.context.get("request", None)
         
@@ -86,7 +83,10 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
             raise PermissionDenied(
                 "You can't review this project!"
             )
-        
+        if project.freelancer == request.user:
+            raise serializers.ValidationError(
+                "You can not review yourself!"
+            )
         
         if project.status != Project.StatusChoice.COMPLETED:
             raise serializers.ValidationError(
@@ -106,6 +106,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
           
         return validated_data
 
+
     def create(self, validated_data):
         
         project = validated_data.get("project", None)
@@ -113,16 +114,11 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         request = self.context.get("request", None)
               
         
-        review = Review.objects.create(
-            project=project, 
-            reviewed=project.freelancer,
+        review = ReviewService.create_review(
+            project=project,
             rating=rating,
             reviewer=request.user
         )
-        
-        avg = project.freelancer.freelancer_reviews.aggregate(Avg("rating"))["rating__avg"]
-        project.freelancer.rating = round(avg)
-        project.freelancer.save(update_fields=["rating"])
         
         return review
 

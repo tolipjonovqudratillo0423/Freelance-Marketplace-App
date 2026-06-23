@@ -1,18 +1,14 @@
 from django.contrib import admin
 
 from apps.users.models import (
-    User, Skills, SkillsCategory, Country,
-    Portfolio,UserProfile,FreelancerProfile,
-    Education,Experience,EmailVerification
-)
-# Register your models here.
+    User
+)   
 
 # =========================================================
 # USER
 # =========================================================
 admin.site.register([
-    User,Portfolio,UserProfile,FreelancerProfile,
-    Education,Experience,EmailVerification
+    User
     ])
 # @admin.register(User)
 # class UserAdmin(admin.ModelAdmin):
@@ -25,17 +21,4 @@ admin.site.register([
 #     fieldsets = (
 #         (None, {"fields": ("username", "password")}),
 #     )
-
-
-
-# =========================================================
-# Skills
-# =========================================================
-
-@admin.register(Skills)
-class SkillsAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
-    list_filter = ("id", "name",)
-    search_fields = ("id", "name",)
-
 

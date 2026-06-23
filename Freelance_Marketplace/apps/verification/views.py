@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 
-from apps.auth.serializers import (
+from apps.authentication.serializers import (
     MyDynamicSerializer,
     )
 from apps.verification.serializers import (
@@ -15,7 +15,7 @@ from apps.common.utils import (
 from apps.verification.models import (
     EmailVerification
     )
-from Freelance_Marketplace.apps.verification.services import (
+from  apps.verification.services import (
     EmailService
 )
 

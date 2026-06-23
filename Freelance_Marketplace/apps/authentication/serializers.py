@@ -119,14 +119,10 @@ class RegisterSerializer(serializers.Serializer):
         user = User.objects.create_user(
             **validated_data
         )
-        
-        user.country = Country.objects.filter(
-            id=validated_data.get("country_id")
-        ).first()
-        user.is_onboarded = False
+        user.country_id = country_id
+        user.save(update_fields=["country"])       
         
         return user
-            
             
 
 

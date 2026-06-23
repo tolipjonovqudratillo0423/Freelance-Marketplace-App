@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from apps.common.models import (
-    Country
+    Country, Skills
 )
      
 
@@ -41,12 +41,19 @@ class User(AbstractUser):
         decimal_places=2,
         default=0,
     )
+    rating = models.PositiveIntegerField(
+        default=0
+    )
     is_verified = models.BooleanField(
         default=False
     )
     is_onboarded = models.BooleanField(
         default=False
     )
+    is_online = models.BooleanField(
+        default=False
+    )
+    
     
     class Meta:
         

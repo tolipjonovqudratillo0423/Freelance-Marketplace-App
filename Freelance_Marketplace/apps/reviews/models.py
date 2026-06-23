@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator
+)
 
 from apps.common.models import BaseModel
 from apps.projects.models import (
@@ -30,7 +34,12 @@ class Review(BaseModel):
         related_name = "freelancer_reviews",
         on_delete = models.CASCADE,
     )
-    rating = models.PositiveSmallIntegerField()
+    rating = models.PositiveSmallIntegerField(
+        validators=[
+            MaxValueValidator(5),
+            MinValueValidator(1),
+        ]
+    )
     
     def __str__(self):
         return f"Freelancer {self.reviewed.username} reviewed by {self.reviewer.username} in project {self.project.title}"

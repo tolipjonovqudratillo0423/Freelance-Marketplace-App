@@ -1,7 +1,7 @@
 from django.db import models
 from apps.common.models import BaseModel
 from django.conf import settings
-from apps.users.models import Skills
+from apps.common.models import Skills, SkillsCategory
 
 
 # =========================================================
@@ -51,7 +51,6 @@ class Project(BaseModel):
         choices=StatusChoice.choices,
         max_length=16,
         default=StatusChoice.OPEN,
-        db_index=True
     )
     
     def __str__(self):
@@ -73,7 +72,12 @@ class Project(BaseModel):
                 # Заменили check= на condition=
                 condition=models.Q(max_price__gte=models.F("min_price")), 
                 name="project_price_valid"
-            )]
+            ),
+            models.CheckConstraint(
+                condition=models.Q(min_price__gte=0),
+                name="project_min_price_positive"
+            )
+            ]
         
         
     

@@ -54,6 +54,10 @@ LOCAL_APPS = [
     "apps.projects",
     "apps.reviews",
     "apps.bids",
+    "apps.authentication",
+    "apps.onboard",
+    "apps.verification",
+    "apps.common",
 ]
 if DEBUG:
     INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS + DEBUG_TOOLS
@@ -250,16 +254,6 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Freelance APIs',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'ENUM_NAME_OVERRIDES': {
-        # Шаблон: 'полный.путь.импорта.КлассВыбора': 'ЖелаемоеИмяВДокументации'
-        
-        'apps.users.models.MyUniqueStatusEnum': 'MyUniqueStatus',
-        'apps.tasks.serializers.AnotherStatusEnum': 'AnotherStatus',
-        
-        # Чтобы убрать ошибку с авто-именем "StatusBe7Enum",
-        # найдите этот третий класс статуса и добавьте его сюда:
-        'apps.orders.models.StatusChoices': 'OrderStatus', 
-    },
 }
 
 

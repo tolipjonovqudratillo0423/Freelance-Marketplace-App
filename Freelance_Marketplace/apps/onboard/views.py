@@ -1,9 +1,11 @@
+from django.db import IntegrityError
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 
 from apps.onboard.serializers import (
     UserProfileSerializer,
+    FreelancerProfileSerializer,
     EducationSerializer,
     ExperienceSerializer
 )
@@ -36,18 +38,59 @@ class CreateProfileAPIView(APIView):
         
         serializer.is_valid(raise_exception=True)
         
-        OnBoardService.create_profile_to_user(
-            user=request.user,
-            serializer=serializer,
+        try:
+            OnBoardService.create_profile_to_user(
+                user=request.user,
+                data=serializer.validated_data,
+            )
+            
+            if request.user.role == "client":
+                request.user.is_onboarded = True
+                request.user.save(update_fields=["is_onboarded"])
+            
+            return ResponseMessage.success(
+                message=F"{request.user.username}'s profile created",
+                data=serializer.data
+            )
+        except IntegrityError as e:
+            return ResponseMessage.error(
+                message="Profile already exists for this user.",
+            )
+
+        
+#==========================================================
+# EDUCATION APIVIEW
+#==========================================================
+@extend_schema(
+    summary="Create Freelancer Profile.",
+    tags=["On Boarding",],
+)
+class CreateFreelancerProfileAPIView(APIView):
+      
+    serializer_class = FreelancerProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        
+        serializer = self.serializer_class(
+            data=request.data
         )
         
+        serializer.is_valid(raise_exception=True)
+        
+        OnBoardService.create_freelancer_profile_to_user(
+            user_profile=request.user.profile,
+            data=serializer.validated_data,
+        )
+        
+        if request.user.role == "freelancer":
+                request.user.is_onboarded = True
+                request.user.save(update_fields=["is_onboarded"])
+            
         return ResponseMessage.success(
-            message=F"{request.user.username}'s profile created",
+            message=F"{request.user.username}'s freelancer profile created",
             data=serializer.data
         )
-        
-        
-
 
 
 #==========================================================
@@ -72,7 +115,7 @@ class CreateEducationAPIView(APIView):
         
         OnBoardService.create_education_to_user(
             freelancer=request.user.profile.freelancer_profile,
-            serializer=serializer,
+            data=serializer.validated_data,
         )
         
         return ResponseMessage.success(
@@ -106,7 +149,7 @@ class CreateExperienceAPIView(APIView):
         
         OnBoardService.create_experience_to_user(
             freelancer=request.user.profile.freelancer_profile,
-            serializer=serializer,
+            data=serializer.validated_data,
         )
         
         return ResponseMessage.success(

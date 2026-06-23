@@ -22,7 +22,7 @@ class EmailVerification(BaseModel):
         related_name="email_verifications",
         on_delete=models.CASCADE
     )
-    code = models.CharField(max_length=6)
+    code = models.CharField(max_length=6, db_index=True)
     attempts = models.PositiveSmallIntegerField(default=0)
     
     def __str__(self):

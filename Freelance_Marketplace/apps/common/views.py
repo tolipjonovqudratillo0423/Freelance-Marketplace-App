@@ -7,7 +7,9 @@ from apps.common.utils import (
     ResponseMessage,
 )
 from apps.common.serializers import (
-    CountrySerializer
+    CountrySerializer,
+    SkillsCategorySerializer,
+    SkillsSerializer
 )
 from apps.common.repositories import(
     CommonRepository
@@ -39,6 +41,63 @@ class CountryAPIView(APIView):
         
         return ResponseMessage.success(
             message='List of avaliable countries.',
+            data=serializer.data           
+        )
+        
+
+
+# =========================================================
+# SKILLS CATEGORY APIVIEW
+# =========================================================
+@extend_schema(
+    summary="List of avaliable skills categories.",
+    tags=["Everyone",],
+)
+class SkillsCategoryAPIView(APIView):
+    
+    serializer_class = SkillsCategorySerializer
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        
+        skills_category = CommonRepository.get_active_skillscategories()
+        
+        serializer = SkillsCategorySerializer(
+            skills_category,
+            many=True
+        )
+        
+        return ResponseMessage.success(
+            message='List of avaliable skills categories.',
+            data=serializer.data           
+        )
+        
+        
+
+
+# =========================================================
+# SKILLS APIVIEW
+# =========================================================
+@extend_schema(
+    summary="List of avaliable skills.",
+    tags=["Everyone",],
+)
+class SkillsAPIView(APIView):
+    
+    serializer_class = SkillsSerializer
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        
+        skills = CommonRepository.get_active_skills()
+        
+        serializer = SkillsSerializer(
+            skills,
+            many=True
+        )
+        
+        return ResponseMessage.success(
+            message='List of avaliable skills.',
             data=serializer.data           
         )
         
