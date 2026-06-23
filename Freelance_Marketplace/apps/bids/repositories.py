@@ -1,5 +1,6 @@
-from apps.bids.models import Bid
+from rest_framework.exceptions import ValidationError
 
+from apps.bids.models import Bid
 
 # =========================================================
 # BID REPOSITORY
@@ -47,3 +48,21 @@ class BidRepository:
         )
         
         return bid
+    
+    @staticmethod
+    def get_project_bids(
+        project_id:int
+    ):
+        bids = list(
+            Bid.objects
+            .select_related(
+                "freelancer"
+            )
+            .filter(project_id=project_id)
+        )
+        
+        if not bids:
+            raise ValidationError("No bids found for this project.")
+
+        return bids
+       

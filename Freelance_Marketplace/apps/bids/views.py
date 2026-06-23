@@ -11,7 +11,7 @@ from apps.bids.services import (
 )
 from apps.bids.serializers import (
     BidSerializer, BidCreateSerializer,
-    BidAcceptSerializer
+    BidAcceptSerializer,GetProjectIdSerializer
 )
 from apps.common.utils import (
     ResponseMessage
@@ -89,8 +89,37 @@ class BidCreateAPIView(APIView):
                 data=serializer.data
             )
         
+   
+   
+   
+
+# =========================================================
+# PROJECT BIDS |||| BOTH OF ROLES
+#=========================================================
+@extend_schema(
+    summary="Project bids",
+    tags=["Both",],
+)    
+class ProjectBidsAPIView(APIView):
+    
+    serializer_class = BidSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, project_id):
         
+        bids = BidRepository.get_project_bids(
+            project_id=project_id
+        )
         
+        serializer = self.serializer_class(
+            bids,
+            many=True
+        )      
+        
+        return ResponseMessage.success(
+            message="Project's bids.",
+            data=serializer.data
+        )  
     
     
 # =========================================================

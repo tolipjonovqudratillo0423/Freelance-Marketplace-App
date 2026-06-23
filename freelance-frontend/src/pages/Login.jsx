@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import Alert from '../components/Alert'
-import { useAuth } from '../context/auth'
+import { getNextRoute, useAuth } from '../context/auth'
 import { apiRequest } from '../lib/api'
 import { useLanguage } from '../context/language'
 
@@ -25,17 +25,16 @@ export default function Login() {
     setLoading(true)
     setError('')
     try {
-      await login(form.username, form.password)
-      const verification = await apiRequest('/auth/send_code/')
+      const user = await login(form.username, form.password)
       const destination = location.state?.from || '/dashboard'
-
-      if (verification.message?.toLowerCase().includes('already verified')) {
-        navigate(destination, { replace: true })
-      } else {
+      if (!user.is_verified) {
+        const verification = await apiRequest('/verification/send_code/', { method: 'POST' })
         navigate('/verify-email', {
           replace: true,
           state: { destination, codeSent: true, message: verification.message },
         })
+      } else {
+        navigate(getNextRoute(user, destination), { replace: true })
       }
     } catch (requestError) {
       setError(requestError.message)

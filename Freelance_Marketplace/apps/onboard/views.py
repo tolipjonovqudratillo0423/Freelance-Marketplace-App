@@ -3,6 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 
+from apps.users.permissions import (
+    IsFreelancerOrReadOnly
+)
 from apps.onboard.serializers import (
     UserProfileSerializer,
     FreelancerProfileSerializer,
@@ -59,7 +62,7 @@ class CreateProfileAPIView(APIView):
 
         
 #==========================================================
-# EDUCATION APIVIEW
+# CREATE FREELANCER PROFILE APIVIEW
 #==========================================================
 @extend_schema(
     summary="Create Freelancer Profile.",
@@ -68,7 +71,7 @@ class CreateProfileAPIView(APIView):
 class CreateFreelancerProfileAPIView(APIView):
       
     serializer_class = FreelancerProfileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsFreelancerOrReadOnly]
     
     def post(self, request):
         
@@ -77,20 +80,24 @@ class CreateFreelancerProfileAPIView(APIView):
         )
         
         serializer.is_valid(raise_exception=True)
-        
-        OnBoardService.create_freelancer_profile_to_user(
-            user_profile=request.user.profile,
-            data=serializer.validated_data,
-        )
-        
-        if request.user.role == "freelancer":
-                request.user.is_onboarded = True
-                request.user.save(update_fields=["is_onboarded"])
+        try:
+            OnBoardService.create_freelancer_profile_to_user(
+                user_profile=request.user.profile,
+                data=serializer.validated_data,
+            )
             
-        return ResponseMessage.success(
-            message=F"{request.user.username}'s freelancer profile created",
-            data=serializer.data
-        )
+            if request.user.role == "freelancer":
+                    request.user.is_onboarded = True
+                    request.user.save(update_fields=["is_onboarded"])
+                
+            return ResponseMessage.success(
+                message=F"{request.user.username}'s freelancer profile created",
+                data=serializer.data
+            )
+        except IntegrityError as e:
+            return ResponseMessage.error(
+                message="Profile already exists for this user.",
+            )
 
 
 #==========================================================

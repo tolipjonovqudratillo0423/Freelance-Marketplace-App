@@ -1,5 +1,5 @@
 from apps.projects.models import (
-    Project,
+    Project
 )
 
 

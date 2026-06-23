@@ -84,7 +84,7 @@ class AboutMeAPIView(APIView):
             "username": user.username,
             "email": user.email,
             "role": user.role,
-            "country": user.country.name,
+            "country": user.country.name if user.country else None,
             "is_verified": user.is_verified,
             "is_active": user.is_active,
             "is_onboarded": user.is_onboarded,

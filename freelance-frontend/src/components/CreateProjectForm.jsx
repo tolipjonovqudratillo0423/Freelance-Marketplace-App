@@ -2,13 +2,14 @@ import { useState } from 'react'
 import Alert from './Alert'
 import { apiRequest } from '../lib/api'
 import { useLanguage } from '../context/language'
+import SkillPicker from './SkillPicker'
 
 const initialForm = {
   title: '',
   description: '',
   min_price: '',
   max_price: '',
-  required_skills: '',
+  required_skills: [],
 }
 
 export default function CreateProjectForm({ onCreated, onCancel }) {
@@ -23,11 +24,6 @@ export default function CreateProjectForm({ onCreated, onCancel }) {
   async function submit(event) {
     event.preventDefault()
     setState({ loading: true, error: '' })
-    const skills = form.required_skills
-      .split(',')
-      .map((value) => Number(value.trim()))
-      .filter(Number.isInteger)
-
     try {
       await apiRequest('/client/projects/create', {
         method: 'POST',
@@ -36,7 +32,7 @@ export default function CreateProjectForm({ onCreated, onCancel }) {
           description: form.description,
           min_price: Number(form.min_price),
           max_price: Number(form.max_price),
-          required_skills: skills,
+          required_skills: form.required_skills,
         }),
       })
       setForm(initialForm)
@@ -74,11 +70,7 @@ export default function CreateProjectForm({ onCreated, onCancel }) {
           <input className="field" type="number" min="0" step="0.01" name="max_price" value={form.max_price} onChange={update} required />
         </label>
       </div>
-      <label className="block">
-        <span className="mb-2 block text-sm text-zinc-400">{t('skillIds')}</span>
-        <input className="field" name="required_skills" value={form.required_skills} onChange={update} placeholder="1, 4, 7" />
-        <span className="mt-2 block text-xs text-zinc-700">{t('skillIdsHint')}</span>
-      </label>
+      <SkillPicker label={t('skills')} value={form.required_skills} onChange={(ids) => setForm((current) => ({ ...current, required_skills: ids }))} />
       <button className="btn-primary" disabled={state.loading}>{state.loading ? t('publishing') : t('publish')}</button>
     </form>
   )

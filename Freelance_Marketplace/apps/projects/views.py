@@ -24,6 +24,9 @@ from apps.projects.filters import (
 from apps.projects.paginations import (
     StandardProjectPage
 )
+from apps.bids.serializers import (
+    BidSerializer
+)
 
 # Create your views here.
 
@@ -134,7 +137,8 @@ class ClientProjectAPIView(APIView):
             project,
             many=True
         )
-        
+    
+    
         return ResponseMessage.success(
             message=F"{request.user.username}'s projects!",
             data=serializer.data

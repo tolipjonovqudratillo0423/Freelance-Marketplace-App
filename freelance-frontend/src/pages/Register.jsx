@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Alert from '../components/Alert'
-import { useAuth } from '../context/auth'
+import { getNextRoute, useAuth } from '../context/auth'
 import { apiRequest } from '../lib/api'
 import { useLanguage } from '../context/language'
 
@@ -55,12 +55,13 @@ export default function Register() {
         method: 'POST',
         body: JSON.stringify({ ...form, country: Number(form.country) }),
       })
-      await login(form.username, form.password)
-      const verification = await apiRequest('/auth/send_code/')
-      navigate('/verify-email', {
-        replace: true,
-        state: { destination: '/dashboard', codeSent: true, message: verification.message },
-      })
+      const user = await login(form.username, form.password)
+      if (!user.is_verified) {
+        const verification = await apiRequest('/verification/send_code/', { method: 'POST' })
+        navigate('/verify-email', { replace: true, state: { destination: '/dashboard', codeSent: true, message: verification.message } })
+      } else {
+        navigate(getNextRoute(user), { replace: true })
+      }
     } catch (requestError) {
       setError(requestError.message)
     } finally {

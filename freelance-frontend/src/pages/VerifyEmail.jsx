@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Alert from '../components/Alert'
 import { CheckIcon } from '../components/Icons'
-import { useAuth } from '../context/auth'
+import { getNextRoute, useAuth } from '../context/auth'
 import { apiRequest } from '../lib/api'
 import { useLanguage } from '../context/language'
 
@@ -23,7 +23,7 @@ export default function VerifyEmail() {
   async function sendCode() {
     setState((current) => ({ ...current, loading: true, error: '' }))
     try {
-      const response = await apiRequest('/auth/send_code/')
+      const response = await apiRequest('/verification/send_code/', { method: 'POST' })
       const alreadyVerified = response.message?.toLowerCase().includes('already verified')
       setState({ loading: false, message: response.message, error: '', alreadyVerified })
     } catch (error) {
@@ -39,15 +39,15 @@ export default function VerifyEmail() {
   }, [location.state?.codeSent])
 
   async function continueToApp(tokens) {
-    const role = await refreshSession(tokens)
-    navigate(location.state?.destination || (role ? `/dashboard/${role}` : '/projects'), { replace: true })
+    const user = await refreshSession(tokens)
+    navigate(getNextRoute(user, location.state?.destination || '/dashboard'), { replace: true })
   }
 
   async function verify(event) {
     event.preventDefault()
     setState((current) => ({ ...current, loading: true, error: '' }))
     try {
-      const response = await apiRequest('/auth/verify_code/', {
+      const response = await apiRequest('/verification/verify_code/', {
         method: 'POST',
         body: JSON.stringify({ code }),
       })

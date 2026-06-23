@@ -101,5 +101,15 @@ class BidCreateSerializer(serializers.ModelSerializer):
 class BidAcceptSerializer(serializers.Serializer):
     
     bid = serializers.IntegerField()
+  
+  
+    
+# =========================================================
+# BID ACCEPT SERIALIZER
+# =========================================================
+  
+class GetProjectIdSerializer(serializers.Serializer):
+    
+    project_id = serializers.IntegerField()
     
     
