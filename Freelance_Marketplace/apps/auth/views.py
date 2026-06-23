@@ -1,0 +1,66 @@
+from django.contrib.auth import authenticate
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from drf_spectacular.utils import extend_schema
+
+from apps.auth.serializers import (
+    LoginSerializer,
+    RegisterSerializer
+    )
+from apps.common.utils import (
+    tokens,
+    ResponseMessage, 
+    )
+
+# =========================================================
+# LOGIN VIEW
+# =========================================================
+@extend_schema(
+    summary="User Login",
+    tags=["Auth",],
+)
+class LoginAPIView(APIView):
+    
+    serializer_class = LoginSerializer
+    
+    def post(self, request):
+        
+        serializer = self.serializer_class(data = request.data)
+        
+        serializer.is_valid(raise_exception=True)
+        
+        username = serializer.validated_data.get("username", None)
+        password = serializer.validated_data.get("password", None)
+        
+        user = authenticate(request,username=username, password=password)
+        
+        if user:
+            return ResponseMessage.success("User found", data=tokens(user))
+        
+        return ResponseMessage.error("User not found")
+ 
+ 
+ 
+# =========================================================
+# REGISTER VIEW
+# =========================================================
+@extend_schema(
+    summary="User Register",
+    tags=["Auth",],
+)
+class RegisterAPIView(APIView):
+
+    permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer   
+    
+    def post(self, request):
+        
+        serializer = self.serializer_class(data = request.data)
+        
+        serializer.is_valid(raise_exception=True)  
+        
+        serializer.save()
+        
+        return ResponseMessage.success(
+            "User created, However you should verify your email to unlock more opportunities !",
+        )

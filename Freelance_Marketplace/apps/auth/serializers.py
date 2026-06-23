@@ -1,11 +1,16 @@
-import string
-
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 
-from apps.users.models import User, Country
+from apps.users.models import (
+    User,Country,
+)
 
+#==========================================================
+# =========================================================
+# ----------------------|| AUTH ||-------------------------
+# =========================================================
+#==========================================================
 
 
 # =========================================================
@@ -118,22 +123,13 @@ class RegisterSerializer(serializers.Serializer):
         user.country = Country.objects.filter(
             id=validated_data.get("country_id")
         ).first()
+        user.is_onboarded = False
         
         return user
             
             
 
-# =========================================================
-# EMAIL VERIFICATION SERIALIZER
-# =========================================================
- 
-class EmailVerificationSerializer(serializers.Serializer):
-    
-    code = serializers.CharField(
-        max_length = 6
-    )
-    
- 
+
 # =========================================================
 # Unique Serializer Don't touch
 # =========================================================
@@ -145,17 +141,9 @@ class MyDynamicSerializer(serializers.Serializer):
         
 
 
-# =========================================================
-# COUNTRY SERIALIZER
-# =========================================================
+
  
-class CountrySerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Country
-        fields = [
-            "id",
-            "name"
-        ]
-        
-        
+ 
+ 
+ 
+

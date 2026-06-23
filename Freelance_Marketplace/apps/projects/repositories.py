@@ -58,3 +58,21 @@ class ProjectRepository:
         )
         
         return project
+    
+    
+    @staticmethod
+    def get_project_for_complete(
+        project_id
+    ):
+        
+        project = (
+            Project.objects
+            .select_for_update()
+            .select_related(
+                "freelancer"
+            )
+            .filter(
+                id=project_id
+            ).first()
+        )
+        return project

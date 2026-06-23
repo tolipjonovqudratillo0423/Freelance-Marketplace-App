@@ -1,9 +1,11 @@
 from django.db import transaction
-from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
 from apps.bids.models import (
     Bid, Project
+)
+from apps.bids.repositories import (
+    BidRepository
 )
 
 class BidService:
@@ -15,15 +17,15 @@ class BidService:
         accepted_by
     ):
         
-        bid = get_object_or_404(
-            Bid.objects
-            .select_for_update()
-            .select_related(
-                "project",
-                "freelancer",
-            ), id=bid_id
+        bid = BidRepository.get_bid_for_accept(
+            bid_id=bid_id
         )
         
+        if not bid:
+            raise ValidationError(
+                "Bid not found!"
+            )
+            
         project = bid.project
         
         if project.client != accepted_by:

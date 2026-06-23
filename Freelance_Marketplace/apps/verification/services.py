@@ -1,6 +1,9 @@
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import ValidationError
+from django.db.models import F
 
-from apps.users.models import EmailVerification
+from apps.verification.models import (
+    EmailVerification
+)
 
 
 
@@ -23,25 +26,25 @@ class EmailService:
         )
         
         if not verify:
-            raise PermissionDenied(
+            raise ValidationError(
                 "Verification code not found!"
             )
 
         if verify.is_expired():
-            raise PermissionDenied(
+            raise ValidationError(
                 "Verfication code is expired!"
             )
         
         if verify.attempts >= 6:
-            raise PermissionDenied(
+            raise ValidationError(
                 "No attempts left!"
             )
         
         if verify.code != code:
-            verify.attempts += 1
+            verify.attempts = F("attempts") + 1
             verify.save(update_fields=["attempts"])
             
-            raise PermissionDenied(
+            raise ValidationError(
                 "Verification code invalid!"
             )
         
@@ -53,6 +56,5 @@ class EmailService:
         ).delete()
     
         return True
-    
     
     

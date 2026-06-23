@@ -85,7 +85,7 @@ class BidCreateAPIView(APIView):
         except IntegrityError:
             
             return ResponseMessage.error(
-                message="You cannot bid on your own project.",
+                message="You already placed a bid ",
                 data=serializer.data
             )
         

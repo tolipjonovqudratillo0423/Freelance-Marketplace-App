@@ -58,7 +58,7 @@ class BidCreateSerializer(serializers.ModelSerializer):
         
         if Bid.objects.filter(project=project, freelancer=request.user).exists():
             raise serializers.ValidationError(
-                "You already placed a bid!"
+                f"You already placed a bid to {project.title} project!"
             )
         
         if project.status != Project.StatusChoice.OPEN:

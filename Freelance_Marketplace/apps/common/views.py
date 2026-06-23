@@ -6,8 +6,11 @@ from rest_framework.permissions import AllowAny
 from apps.common.utils import (
     ResponseMessage,
 )
-from apps.users.serializers import (
-    CountrySerializer, Country
+from apps.common.serializers import (
+    CountrySerializer
+)
+from apps.common.repositories import(
+    CommonRepository
 )
 
 # Create your views here.
@@ -27,9 +30,7 @@ class CountryAPIView(APIView):
     
     def get(self, request):
         
-        country = Country.objects.filter(
-            is_active = True
-            )
+        country = CommonRepository.get_active_countries()
         
         serializer = CountrySerializer(
             country,
@@ -40,4 +41,8 @@ class CountryAPIView(APIView):
             message='List of avaliable countries.',
             data=serializer.data           
         )
+        
+        
+        
+        
   

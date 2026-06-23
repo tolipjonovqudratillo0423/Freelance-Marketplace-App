@@ -1,77 +1,23 @@
-from django.contrib.auth import authenticate
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 
-from apps.users.serializers import (
-    LoginSerializer, RegisterSerializer, 
-    EmailVerificationSerializer,
-    MyDynamicSerializer, CountrySerializer
+from apps.auth.serializers import (
+    MyDynamicSerializer,
     )
+from apps.verification.serializers import (
+    EmailVerificationSerializer
+)
 from apps.common.utils import (
     tokens, ResponseMessage, 
     send_code, create_code
     )
-from apps.users.models import (
-    User, EmailVerification,
-    Country
+from apps.verification.models import (
+    EmailVerification
     )
-from apps.users.services import (
+from Freelance_Marketplace.apps.verification.services import (
     EmailService
 )
-
-# =========================================================
-# LOGIN VIEW
-# =========================================================
-@extend_schema(
-    summary="User Login",
-    tags=["Auth",],
-)
-class LoginAPIView(APIView):
-    
-    serializer_class = LoginSerializer
-    
-    def post(self, request):
-        
-        serializer = self.serializer_class(data = request.data)
-        
-        serializer.is_valid(raise_exception=True)
-        
-        username = serializer.validated_data.get("username", None)
-        password = serializer.validated_data.get("password", None)
-        
-        user = authenticate(request,username=username, password=password)
-        
-        if user:
-            return ResponseMessage.success("User found ! :)", data=tokens(user))
-        
-        return ResponseMessage.error("User not found ! :(")
- 
- 
- 
-# =========================================================
-# REGISTER VIEW
-# =========================================================
-@extend_schema(
-    summary="User Register",
-    tags=["Auth",],
-)
-class RegisterAPIView(APIView):
-
-    permission_classes = [AllowAny]
-    serializer_class = RegisterSerializer   
-    
-    def post(self, request):
-        
-        serializer = self.serializer_class(data = request.data)
-        
-        serializer.is_valid(raise_exception=True)  
-        
-        serializer.save()
-        
-        return ResponseMessage.success(
-            "User created, However you should verify your email to unlock more opportunities !",
-        )
 
 
 
@@ -88,7 +34,7 @@ class EmailCodeSendAPIView(APIView):
     serializer_class = MyDynamicSerializer
     permission_classes = [IsAuthenticated]
     
-    def get(self, request):
+    def post(self, request):
         
         user = request.user
         
@@ -105,8 +51,13 @@ class EmailCodeSendAPIView(APIView):
                     return ResponseMessage.error(
                         "Your code have not expired yet !"
                     )
-            
-            EmailVerification.objects.create(user = user, code = code)
+            EmailVerification.objects.update_or_create(
+                user=user,
+                defaults={
+                    "code":code,
+                    "attempts":0
+                }
+            )
             
             send_code(user.email, code=code)
             return ResponseMessage.success("Code sent ! to :)", data={"email":user.email})
@@ -144,7 +95,6 @@ class EmailVerifyAPIView(APIView):
                 message="Verfication is failed!"
             )
         
-        return ResponseMessage.success("Email verified ! :)", data=tokens(request.user))
+        return ResponseMessage.success("Email verified", data=tokens(request.user))
 
   
-

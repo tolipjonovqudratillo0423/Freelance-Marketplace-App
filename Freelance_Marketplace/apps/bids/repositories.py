@@ -28,3 +28,22 @@ class BidRepository:
         )
         
         return bids
+    
+    @staticmethod
+    def get_bid_for_accept(
+        bid_id:int
+    ):
+        
+        bid = (
+            Bid.objects
+            .select_for_update()
+            .select_related(
+                "freelancer",
+                "project",
+                "project__client",
+            ).filter(
+                id=bid_id
+            ).first()
+        )
+        
+        return bid
