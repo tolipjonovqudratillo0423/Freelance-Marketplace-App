@@ -10,7 +10,7 @@ from apps.verification.serializers import (
 )
 from apps.common.utils import (
     tokens, ResponseMessage, 
-    send_code, create_code
+    send_verification_code, create_code
     )
 from apps.verification.models import (
     EmailVerification
@@ -59,7 +59,7 @@ class EmailCodeSendAPIView(APIView):
                 }
             )
             
-            send_code(user.email, code=code)
+            send_verification_code(user.email, code=code)
             return ResponseMessage.success("Code sent ! to :)", data={"email":user.email})
         
         return ResponseMessage.success(

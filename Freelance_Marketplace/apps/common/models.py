@@ -56,6 +56,9 @@ class SkillsCategory(BaseModel):
         return self.name
     
     class Meta:
+        verbose_name = "Skill Category"
+        verbose_name_plural = "Skill Categories"
+        
         constraints = [
             models.UniqueConstraint(
                 fields=["name"],

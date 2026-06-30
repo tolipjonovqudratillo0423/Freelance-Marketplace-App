@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import AcceptBidControl from '../components/AcceptBidControl'
 import CreateProjectForm from '../components/CreateProjectForm'
 import EmptyState from '../components/EmptyState'
 import SkillTags from '../components/SkillTags'
@@ -8,6 +7,7 @@ import StatusBadge from '../components/StatusBadge'
 import { apiRequest, getResults } from '../lib/api'
 import { formatMoney } from '../lib/format'
 import { useLanguage } from '../context/language'
+import { Link } from 'react-router-dom'
 
 export default function ClientDashboard() {
   const [projects, setProjects] = useState([])
@@ -92,7 +92,7 @@ export default function ClientDashboard() {
                   <span className="text-zinc-300">{project.freelancer}</span>
                 </div>
               )}
-              <AcceptBidControl project={project} onAccepted={loadProjects} />
+              <Link to={`/projects/${project.id}`} className="btn-secondary mt-5 w-full">{t('view')}</Link>
             </article>
           ))}
         </div>

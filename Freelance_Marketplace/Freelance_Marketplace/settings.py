@@ -119,8 +119,12 @@ ROOT_URLCONF = 'Freelance_Marketplace.urls'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': config("ENGINE", default="django.db.backends.postgresql"),
+        'NAME': config("PGDATABASE", default=config("DB_NAME", default="")),
+        'USER': config("PGUSER", default=config("DB_USER", default="")),
+        'PASSWORD': config("PGPASSWORD", default=config("DB_PASSWORD", default="")),
+        'HOST': config("PGHOST", default=config("DB_HOST", default="127.0.0.1")),
+        'PORT': config("PGPORT", default=config("DB_PORT", default="5432")),
     }
 }
 

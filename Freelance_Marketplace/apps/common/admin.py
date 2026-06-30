@@ -12,9 +12,10 @@ from apps.common.models import (
 
 @admin.register(Skills)
 class SkillsAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
-    list_filter = ("id", "name",)
+    list_display = ("id", "name", "is_active")
     search_fields = ("id", "name",)
+    list_editable = ["is_active"]
+    
 
 
 # =========================================================
@@ -23,7 +24,15 @@ class SkillsAdmin(admin.ModelAdmin):
 
 @admin.register(SkillsCategory)
 class SkillsCategoryAdmin(admin.ModelAdmin):
-    list_display = ("id", "name")
+    list_display = ("id", "name", "is_active")
+    search_fields = ["name"]
+    list_editable = ["is_active"]
+    
+    
+    class Meta:
+
+        verbose_name = "Skill Category"
+        verbose_name_plural = "Skill Categories"
     
     
     
@@ -33,7 +42,11 @@ class SkillsCategoryAdmin(admin.ModelAdmin):
   
 @admin.register(Country)
 class CountryAdminModel(admin.ModelAdmin):
-    list_display = ("id", "name")
+    list_display = ("id", "name", "is_active")
+    search_fields = ["name"]
+    list_editable = ["is_active"]
+    
+    
     
     class Meta:
         verbose_name = "Country"

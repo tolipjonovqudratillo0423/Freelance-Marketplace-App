@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Alert from '../components/Alert'
 import EmptyState from '../components/EmptyState'
@@ -16,9 +16,26 @@ export default function ProjectDetail() {
   const [project, setProject] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [bids, setBids] = useState([])
+  const [bidsLoading, setBidsLoading] = useState(false)
+  const [acceptingBid, setAcceptingBid] = useState(null)
   const [bid, setBid] = useState({ reply: '', price: '' })
   const [bidState, setBidState] = useState({ loading: false, error: '', success: '' })
   const { t } = useLanguage()
+
+  const loadBids = useCallback(async () => {
+    if (!isAuthenticated) return
+    await Promise.resolve()
+    setBidsLoading(true)
+    try {
+      const response = await apiRequest(`/freelancer/project/${id}/bids`)
+      setBids(Array.isArray(response.data) ? response.data : [])
+    } catch {
+      setBids([])
+    } finally {
+      setBidsLoading(false)
+    }
+  }, [id, isAuthenticated])
 
   useEffect(() => {
     let active = true
@@ -38,6 +55,11 @@ export default function ProjectDetail() {
     return () => { active = false }
   }, [id])
 
+  useEffect(() => {
+    const timer = setTimeout(() => loadBids(), 0)
+    return () => clearTimeout(timer)
+  }, [loadBids])
+
   async function placeBid(event) {
     event.preventDefault()
     setBidState({ loading: true, error: '', success: '' })
@@ -48,15 +70,29 @@ export default function ProjectDetail() {
       })
       setBid({ reply: '', price: '' })
       setBidState({ loading: false, error: '', success: response.message || 'Your bid has been placed.' })
+      await loadBids()
     } catch (requestError) {
       setBidState({ loading: false, error: requestError.message, success: '' })
     }
   }
 
+  async function acceptBid(bidId) {
+    setAcceptingBid(bidId)
+    try {
+      await apiRequest('/client/bid/accept', {
+        method: 'POST',
+        body: JSON.stringify({ bid: bidId }),
+      })
+      await loadBids()
+    } catch (requestError) {
+      setBidState({ loading: false, error: requestError.message, success: '' })
+    } finally {
+      setAcceptingBid(null)
+    }
+  }
+
   if (loading) return <div className="page-shell"><Spinner label={t('loadingProject')} /></div>
   if (error || !project) return <div className="page-shell"><EmptyState title={t('unavailable')} description={error} action={<Link to="/projects" className="btn-secondary">{t('backProjects')}</Link>} /></div>
-
-  const embeddedBids = Array.isArray(project.bids) ? project.bids : []
 
   return (
     <div className="page-shell">
@@ -84,23 +120,37 @@ export default function ProjectDetail() {
           <section className="surface p-6 sm:p-8">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-zinc-200">{t('proposals')}</h2>
-              <span className="text-xs text-zinc-600">{embeddedBids.length} {t('visible')}</span>
+              <span className="text-xs text-zinc-600">{bids.length} {t('visible')}</span>
             </div>
-            {embeddedBids.length ? (
+            {bidsLoading ? (
+              <Spinner label="Loading bids" />
+            ) : bids.length ? (
               <div className="mt-5 divide-y divide-line border-y border-line">
-                {embeddedBids.map((item) => (
+                {bids.map((item) => (
                   <div key={item.id} className="py-5">
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-sm font-medium text-zinc-300">{item.freelancer}</span>
-                      <span className="text-sm text-zinc-300">{formatMoney(item.price)}</span>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-medium text-zinc-300">{item.freelancer}</span>
+                          <StatusBadge status={item.status} />
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-zinc-500">{item.reply}</p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span className="text-sm font-semibold text-zinc-200">{formatMoney(item.price)}</span>
+                        {role === 'client' && item.status === 'NEW' && project.status === 'open' && (
+                          <button className="btn-primary px-3 py-2 text-xs" onClick={() => acceptBid(item.id)} disabled={acceptingBid === item.id}>
+                            {acceptingBid === item.id ? t('accepting') : t('acceptBid')}
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-zinc-500">{item.reply}</p>
                   </div>
                 ))}
               </div>
             ) : (
               <p className="mt-4 rounded-lg border border-dashed border-line px-4 py-6 text-sm leading-6 text-zinc-600">
-                {t('privateProposals')}
+                No bids yet.
               </p>
             )}
           </section>

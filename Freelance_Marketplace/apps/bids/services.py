@@ -7,6 +7,9 @@ from apps.bids.models import (
 from apps.bids.repositories import (
     BidRepository
 )
+from apps.common.utils import (
+    send_accept_message_to_email
+)
 
 class BidService:
     
@@ -58,7 +61,15 @@ class BidService:
         ).update(
             status=Bid.BidStatus.DECLINED
         )
-        
+        try:
+            send_accept_message_to_email(
+                email=bid.freelancer.email,
+                username=bid.freelancer.username,
+                project_title=project.title            
+            )
+        except Exception:
+            pass
+            
         return project
     
 
